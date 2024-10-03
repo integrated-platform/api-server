@@ -1,13 +1,16 @@
+server:
+  port: 8080 # API 서버 포트 설정
+
 spring:
   datasource:
-    url: jdbc:h2:mem:testdb
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
+    url: jdbc:h2:mem:testdb # 메모리 내 H2 데이터베이스 URL
+    driver-class-name: org.h2.Driver # H2 드라이버 클래스 이름
+    username: sa # 데이터베이스 사용자 이름
+    password: # 데이터베이스 비밀번호 (기본값 없음)
   jpa:
     hibernate:
-      ddl-auto: create-drop # ?????? ?? ? ?????? ??
-    show-sql: true # ???? SQL ?? ??
+      ddl-auto: create-drop # 애플리케이션 종료 시 테이블 삭제 후 재생성
+    show-sql: true # 실행된 SQL 쿼리를 로그에 출력
   h2:
     console:
-      enabled: true # H2 ?? ???
+      enabled: true # H2 콘솔을 사용할 수 있도록 설정

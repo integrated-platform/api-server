@@ -7,23 +7,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserService {
 
-    // User 엔티티를 UserDTO로 변환
-    public UserDTO convertToDto(User user) {
-        if (user == null) {
-            return null;
-        }
-        return new UserDTO(user.getId(), user.getName(), user.getEmail());
+    // UserDTO를 User Entity로 변환
+    public User convertToEntity(UserDTO userDTO) {
+        return new User(userDTO.getUsername(), userDTO.getPassword(), userDTO.getEmail());
     }
 
-    // UserDTO를 User 엔티티로 변환
-    public User convertToEntity(UserDTO userDTO) {
-        if (userDTO == null) {
-            return null;
-        }
-        User user = new User();
-        user.setId(userDTO.getId());
-        user.setName(userDTO.getName());
-        user.setEmail(userDTO.getEmail());
-        return user;
+    // User Entity를 UserDTO로 변환
+    public UserDTO convertToDto(User user) {
+        return new UserDTO(user.getId(), user.getUsername(), user.getPassword(), user.getEmail());
     }
 }

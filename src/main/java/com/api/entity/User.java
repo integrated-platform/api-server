@@ -9,24 +9,25 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "\"user\"") // H2의 예약어를 이스케이프 처리
 public class User {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // 자동 증가 ID
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
+    private String username;
+    private String password;
     private String email;
 
-    // 기본 생성자
-    public User() {}
-
     // 생성자
-    public User(String name, String email) {
-        this.name = name;
+    public User() {
+    }
+
+    public User(String username, String password, String email) {
+        this.username = username;
+        this.password = password;
         this.email = email;
     }
 
-    // Getters 및 Setters
+    // Getter 및 Setter
     public Long getId() {
         return id;
     }
@@ -35,12 +36,20 @@ public class User {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getUsername() {
+        return username;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getEmail() {

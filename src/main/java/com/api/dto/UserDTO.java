@@ -2,20 +2,19 @@ package com.api.dto;
 
 public class UserDTO {
     private Long id;
-    private String name;
+    private String username;
+    private String password;
     private String email;
 
-    // 기본 생성자
-    public UserDTO() {}
-
-    // 모든 필드를 포함한 생성자
-    public UserDTO(Long id, String name, String email) {
+    // 생성자
+    public UserDTO(Long id, String username, String password, String email) {
         this.id = id;
-        this.name = name;
+        this.username = username;
+        this.password = password;
         this.email = email;
     }
 
-    // Getter와 Setter 메서드
+    // Getter 및 Setter
     public Long getId() {
         return id;
     }
@@ -24,12 +23,20 @@ public class UserDTO {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getUsername() {
+        return username;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getEmail() {
