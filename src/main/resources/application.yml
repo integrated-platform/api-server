@@ -9,7 +9,7 @@ spring:
     password: # 데이터베이스 비밀번호 (기본값 없음)
   jpa:
     hibernate:
-      ddl-auto: create-drop # 애플리케이션 종료 시 테이블 삭제 후 재생성
+      ddl-auto: update # 테이블을 업데이트하고 데이터 유지
     show-sql: true # 실행된 SQL 쿼리를 로그에 출력
   h2:
     console:
