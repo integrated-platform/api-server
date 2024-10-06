@@ -3,6 +3,7 @@ package com.api.controller.ur;
 import com.api.dto.LoginRequest;
 import com.api.dto.LoginResponse;
 import com.api.dto.UserDTO;
+import com.api.entity.Role;
 import com.api.entity.User;
 import com.api.response.ApiResponse;
 import com.api.service.RoleService; // RoleService 추가
@@ -35,22 +36,24 @@ public class UserController {
         User user = userService.convertToEntity(userDTO);
 
         // 기본 권한 로드 및 설정
-        Long userRoleId = roleService.findUserRoleId(); // 사용자 권한 ID 조회
-        if (userRoleId == null) {
+        Role userRole = roleService.findUserRole(); // 사용자 권한 객체 조회
+        if (userRole == null) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ApiResponse<>(false, "기본 사용자 권한을 찾을 수 없습니다.", null));
         }
-        userService.assignRoleToUser(user, userRoleId); // 사용자에게 권한 부여
+
+        // 사용자에게 권한 부여
+        userService.assignRoleToUser(user, userRole);
 
         // 사용자 저장
         userService.save(user);
 
         // USER_ROLES 테이블에 관계 추가
-        userService.addUserRole(user.getId(), userRoleId); // 역할 연결 메서드 호출
-
+        userService.addUserRole(user.getEmail(), userRole); // 역할 연결 메서드 호출
 
         return ResponseEntity.ok(new ApiResponse<>(true, "사용자 생성 성공", userService.convertToDto(user)));
     }
+
 
     // 사용자 검증 메서드
     @PostMapping("/validate")

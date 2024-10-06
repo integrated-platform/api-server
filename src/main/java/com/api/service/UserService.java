@@ -73,12 +73,12 @@ public class UserService {
     }
 
     @Transactional
-    public void assignRoleToUser(User user, Long roleId) {
-        Role role = roleRepository.findById(roleId)
-                .orElseThrow(() -> new RuntimeException("권한을 찾을 수 없습니다.")); // 권한 ID로 권한 조회
+    public void assignRoleToUser(User user, Role role) {
+        if (role == null) {
+            throw new RuntimeException("권한이 null입니다."); // null 체크 추가
+        }
         user.getRoles().add(role); // 사용자 엔티티의 권한 집합에 권한 추가
     }
-
     // JWT 생성 메서드
     public String generateJWT(User user) {
         // JWT 생성
@@ -107,9 +107,13 @@ public class UserService {
         return "generated-jwt-token"; // 실제 JWT로 대체
     }
 
-    public void addUserRole(Long userId, Long roleId) {
+    public void addUserRole(String email, Role role) {
+        if (role == null) {
+            throw new RuntimeException("권한이 null입니다."); // null 체크 추가
+        }
+
         // USER_ROLES 테이블에 역할 연결
-        userRoleRepository.save(new UserRole(userId, roleId)); // UserRole 엔티티 생성 후 저장
+        userRoleRepository.save(new UserRole(email, role.getRoleCode())); // UserRole 엔티티 생성 후 저장
     }
 
 

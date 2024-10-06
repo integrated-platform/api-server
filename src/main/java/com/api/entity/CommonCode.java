@@ -7,10 +7,9 @@ import jakarta.persistence.*;
 public class CommonCode {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // 공통 코드 ID
+    @Column(name = "code", nullable = false, unique = true) // 고유 코드
+    private String code;
 
-    private String code; // 코드 값
     private String name; // 코드 이름
 
     private String type; // 코드 타입 (예: ROLE, MENU 등)
@@ -23,15 +22,6 @@ public class CommonCode {
         this.code = code;
         this.name = name;
         this.type = type;
-    }
-
-    // Getter, Setter
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getCode() {

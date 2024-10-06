@@ -20,16 +20,6 @@ public class MenuController {
     @Autowired
     private MenuService menuService;
 
-    @GetMapping("/{menuId}/access/{email}")
-    public ResponseEntity<String> checkMenuAccess(@PathVariable Long menuId, @PathVariable String email) {
-        boolean hasAccess = menuService.hasAccessToMenu(email, menuId);
-
-        if (hasAccess) {
-            return ResponseEntity.ok("접근 가능");
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("접근 불가");
-        }
-    }
 
 
     // 메뉴 접근 권한 확인

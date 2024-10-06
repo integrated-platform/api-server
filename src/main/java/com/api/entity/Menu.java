@@ -10,11 +10,11 @@ import java.util.Set;
 public class Menu {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;  // 메뉴 ID
+    @Column(name = "menu_code", nullable = false, unique = true)
+    private String menuCode; // 메뉴 코드
 
     @OneToOne
-    @JoinColumn(name = "common_code_id", referencedColumnName = "id")
+    @JoinColumn(name = "common_code", referencedColumnName = "code", nullable = false) // 공통 코드와 조인
     private CommonCode commonCode; // 공통 코드
 
     @ManyToOne
@@ -33,25 +33,36 @@ public class Menu {
 
     // 기본 생성자
     public Menu() {}
-    // 생성자 추가
-    public Menu(CommonCode commonCode, Menu parent) {
+
+    // 생성자
+    public Menu(String menuCode, CommonCode commonCode, Menu parent, String menuRole, String menuType) {
+        this.menuCode = menuCode;
         this.commonCode = commonCode;
         this.parent = parent;
-    }
-    // 생성자
-    public Menu(CommonCode commonCode, String menuRole, String menuType) {
-        this.commonCode = commonCode;
         this.menuRole = menuRole;
         this.menuType = menuType;
     }
 
-    // Getter, Setter
-    public Long getId() {
-        return id;
+    // 공통 코드만 받는 생성자 (부모 메뉴는 null)
+    public Menu(CommonCode commonCode) {
+        this.commonCode = commonCode;
+        this.menuCode = commonCode.getCode(); // 메뉴 코드를 공통 코드로 설정
+        this.parent = null; // 상위 메뉴 없음
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public Menu(CommonCode commonCode, Menu parent) {
+        this.commonCode = commonCode;
+        this.parent = parent;
+    }
+
+
+    // Getter, Setter
+    public String getMenuCode() {
+        return menuCode;
+    }
+
+    public void setMenuCode(String menuCode) {
+        this.menuCode = menuCode;
     }
 
     public CommonCode getCommonCode() {
