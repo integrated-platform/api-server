@@ -1,12 +1,17 @@
 package com.api.service;
 
 import com.api.dto.UserDTO;
+import com.api.entity.Role;
 import com.api.entity.User;
+import com.api.entity.UserRole;
+import com.api.repository.RoleRepository;
 import com.api.repository.UserRepository;
+import com.api.repository.UserRoleRepository;
 import com.api.utilty.PasswordUtils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,12 +23,22 @@ public class UserService {
     private final String SECRET_KEY = "your_secret_key"; // 비밀 키 (환경 변수로 관리하는 것이 좋음)
     private final long EXPIRATION_TIME = 86400000; // 1일 (24시간)
 
-    private final UserRepository userRepository;
+    @Autowired
+    private  UserRepository userRepository;
 
-    @Autowired // 생성자 주입 방식
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+
+    @Autowired
+    private RoleRepository roleRepository; // RoleRepository 주입
+
+    @Autowired
+    private UserRoleRepository userRoleRepository;
+
+
+    // 이메일 중복 체크 로직 추가
+    public boolean isEmailAlreadyInUse(String email) {
+        return userRepository.existsByEmail(email);
     }
+
 
 
     // UserDTO를 User Entity로 변환
@@ -57,6 +72,13 @@ public class UserService {
         return user != null && verifyPassword(password, user.getPassword());
     }
 
+    @Transactional
+    public void assignRoleToUser(User user, Long roleId) {
+        Role role = roleRepository.findById(roleId)
+                .orElseThrow(() -> new RuntimeException("권한을 찾을 수 없습니다.")); // 권한 ID로 권한 조회
+        user.getRoles().add(role); // 사용자 엔티티의 권한 집합에 권한 추가
+    }
+
     // JWT 생성 메서드
     public String generateJWT(User user) {
         // JWT 생성
@@ -83,6 +105,11 @@ public class UserService {
 
         // JWT 생성 로직 추가 (예: Jwts.builder()를 사용하여 토큰 생성)
         return "generated-jwt-token"; // 실제 JWT로 대체
+    }
+
+    public void addUserRole(Long userId, Long roleId) {
+        // USER_ROLES 테이블에 역할 연결
+        userRoleRepository.save(new UserRole(userId, roleId)); // UserRole 엔티티 생성 후 저장
     }
 
 

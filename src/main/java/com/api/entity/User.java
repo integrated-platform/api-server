@@ -1,33 +1,41 @@
 package com.api.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
-@Table(name = "\"user\"") // H2의 예약어를 이스케이프 처리
+@Table(name = "users")
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String username;
-    private String password;
+
+    @Column(unique = true) // 이메일을 유니크하게 설정
     private String email;
 
-    // 생성자
-    public User() {
-    }
+    @JsonIgnore
+    private String password;
 
+    @ManyToMany(mappedBy = "users", fetch = FetchType.EAGER)
+    private Set<Role> roles = new HashSet<>(); // 이 사용자가 가진 권한들
+
+    // 기본 생성자
+    public User() {}
+
+    // 생성자
     public User(String username, String password, String email) {
         this.username = username;
         this.password = password;
         this.email = email;
     }
 
-    // Getter 및 Setter
+    // Getter, Setter
     public Long getId() {
         return id;
     }
@@ -44,6 +52,14 @@ public class User {
         this.username = username;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public String getPassword() {
         return password;
     }
@@ -52,11 +68,11 @@ public class User {
         this.password = password;
     }
 
-    public String getEmail() {
-        return email;
+    public Set<Role> getRoles() {
+        return roles;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 }

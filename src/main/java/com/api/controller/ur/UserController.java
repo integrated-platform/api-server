@@ -5,6 +5,7 @@ import com.api.dto.LoginResponse;
 import com.api.dto.UserDTO;
 import com.api.entity.User;
 import com.api.response.ApiResponse;
+import com.api.service.RoleService; // RoleService 추가
 import com.api.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,29 +19,53 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private RoleService roleService; // RoleService 주입
+
     // 사용자 가입 메서드
     @PostMapping
     public ResponseEntity<ApiResponse<UserDTO>> createUser(@RequestBody UserDTO userDTO) {
+        // 이메일 중복 체크
+        if (userService.isEmailAlreadyInUse(userDTO.getEmail())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(new ApiResponse<>(false, "이미 존재하는 이메일입니다.", null));
+        }
+
+        // 사용자 엔티티 변환
         User user = userService.convertToEntity(userDTO);
+
+        // 기본 권한 로드 및 설정
+        Long userRoleId = roleService.findUserRoleId(); // 사용자 권한 ID 조회
+        if (userRoleId == null) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse<>(false, "기본 사용자 권한을 찾을 수 없습니다.", null));
+        }
+        userService.assignRoleToUser(user, userRoleId); // 사용자에게 권한 부여
+
+        // 사용자 저장
         userService.save(user);
+
+        // USER_ROLES 테이블에 관계 추가
+        userService.addUserRole(user.getId(), userRoleId); // 역할 연결 메서드 호출
+
 
         return ResponseEntity.ok(new ApiResponse<>(true, "사용자 생성 성공", userService.convertToDto(user)));
     }
 
-    // 검증 메서드
+    // 사용자 검증 메서드
     @PostMapping("/validate")
     public ResponseEntity<ApiResponse<Void>> validateUser(@RequestBody LoginRequest loginRequest) {
         boolean isValid = userService.validateUser(loginRequest.getEmail(), loginRequest.getPassword());
 
         if (!isValid) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new ApiResponse<>(false, "사용자 검증 실패: 사용자 이름 또는 비밀번호가 잘못되었습니다.", null));
+                    .body(new ApiResponse<>(false, "사용자 검증 실패: 이메일 또는 비밀번호가 잘못되었습니다.", null));
         }
 
         return ResponseEntity.ok(new ApiResponse<>(true, "사용자 검증 성공!", null));
     }
 
-
+    // 로그인 메서드 (JWT 생성 포함)
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<LoginResponse>> login(@RequestBody LoginRequest loginRequest) {
         // 사용자 검증 로직
@@ -48,7 +73,7 @@ public class UserController {
 
         if (user == null || !userService.verifyPassword(loginRequest.getPassword(), user.getPassword())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new ApiResponse<>(false, "로그인 실패: 사용자 이름 또는 비밀번호가 잘못되었습니다.", null));
+                    .body(new ApiResponse<>(false, "로그인 실패: 이메일 또는 비밀번호가 잘못되었습니다.", null));
         }
 
         // JWT 생성
@@ -60,16 +85,18 @@ public class UserController {
         return ResponseEntity.ok(new ApiResponse<>(true, "로그인 성공", loginResponse));
     }
 
+    // 사용자 정보 조회 메서드
+    @GetMapping("/{email}")
+    public ResponseEntity<ApiResponse<UserDTO>> getUserByEmail(@PathVariable String email) {
+        User user = userService.findByEmail(email);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ApiResponse<>(false, "사용자를 찾을 수 없습니다.", null));
+        }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
-        // 사용자 조회 로직 (repository 사용)
-        // User user = userRepository.findById(id).orElse(null);
-        // return ResponseEntity.ok(userService.convertToDto(user));
-
-        return ResponseEntity.ok(new UserDTO(id, "Sample Name", "sample@example.com", "password")); // 예시 응답
+        return ResponseEntity.ok(new ApiResponse<>(true, "사용자 조회 성공", userService.convertToDto(user)));
     }
 
 
-    // 다른 메서드 추가 가능 (update, delete 등)
+    // 메뉴 접근 권한 확인
 }
