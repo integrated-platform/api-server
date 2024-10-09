@@ -21,7 +21,7 @@ public class RoleService {
     // 기본 사용자 역할을 찾는 메서드
     public Role findUserRole() {
         // 역할 코드가 "USER"인 Role을 찾아서 반환
-        return roleRepository.findByRoleCode("USER")
+        return roleRepository.findByRoleCode("R000001")
                 .orElse(null); // 없으면 null 반환
     }
 }

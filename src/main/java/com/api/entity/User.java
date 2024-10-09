@@ -2,7 +2,6 @@ package com.api.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -11,13 +10,10 @@ import java.util.Set;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(unique = true, nullable = false) // 이메일을 기본 키로 설정
+    private String email;
 
     private String username;
-
-    @Column(unique = true) // 이메일을 유니크하게 설정
-    private String email;
 
     @JsonIgnore
     private String password;
@@ -36,12 +32,12 @@ public class User {
     }
 
     // Getter, Setter
-    public Long getId() {
-        return id;
+    public String getEmail() {
+        return email;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getUsername() {
@@ -50,14 +46,6 @@ public class User {
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public String getPassword() {

@@ -1,28 +1,19 @@
 package com.api.dto;
 
 public class UserDTO {
-    private Long id;
+
     private String username;
     private String password;
     private String email;
 
     // 생성자
-    public UserDTO(Long id, String username, String password, String email) {
-        this.id = id;
+    public UserDTO(String username, String password, String email) {
         this.username = username;
         this.password = password;
         this.email = email;
     }
 
     // Getter 및 Setter
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getUsername() {
         return username;
     }

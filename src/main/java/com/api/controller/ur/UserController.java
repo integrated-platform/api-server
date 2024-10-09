@@ -49,7 +49,7 @@ public class UserController {
         userService.save(user);
 
         // USER_ROLES 테이블에 관계 추가
-        userService.addUserRole(user.getEmail(), userRole); // 역할 연결 메서드 호출
+        userService.addUserRole(user.getEmail(), userRole.getRoleCode()); // 역할 연결 메서드 호출
 
         return ResponseEntity.ok(new ApiResponse<>(true, "사용자 생성 성공", userService.convertToDto(user)));
     }

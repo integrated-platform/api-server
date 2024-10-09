@@ -23,7 +23,7 @@ public class Role {
     @JoinTable(
             name = "user_roles",
             joinColumns = @JoinColumn(name = "role_code"), // 역할 코드와 매핑
-            inverseJoinColumns = @JoinColumn(name = "user_id")
+            inverseJoinColumns = @JoinColumn(name = "user_email")
     )
     private Set<User> users = new HashSet<>(); // 이 권한을 가진 사용자들
 

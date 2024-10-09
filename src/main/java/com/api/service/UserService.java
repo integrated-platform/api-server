@@ -48,7 +48,7 @@ public class UserService {
 
     // User Entity를 UserDTO로 변환
     public UserDTO convertToDto(User user) {
-        return new UserDTO(user.getId(), user.getUsername(), user.getPassword(), user.getEmail());
+        return new UserDTO(user.getUsername(), user.getPassword(), user.getEmail());
     }
 
     // 사용자 저장 로직
@@ -60,7 +60,9 @@ public class UserService {
     }
 
     public User findByEmail(String email) {
-        return userRepository.findByEmail(email);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다: " + email));
+        return user;
     }
 
     public boolean verifyPassword(String rawPassword, String encryptedPassword) {
@@ -68,7 +70,8 @@ public class UserService {
     }
 
     public boolean validateUser(String email, String password) {
-        User user = userRepository.findByEmail(email);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다: " + email));
         return user != null && verifyPassword(password, user.getPassword());
     }
 
@@ -98,7 +101,8 @@ public class UserService {
 
     public String generateToken(String email, String password) {
         // 사용자 인증 로직
-        User user = userRepository.findByEmail(email);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다: " + email));
         if (user == null || !verifyPassword(password, user.getPassword())) {
             return null; // 인증 실패
         }
@@ -107,13 +111,25 @@ public class UserService {
         return "generated-jwt-token"; // 실제 JWT로 대체
     }
 
-    public void addUserRole(String email, Role role) {
-        if (role == null) {
-            throw new RuntimeException("권한이 null입니다."); // null 체크 추가
+    public void addUserRole(String email, String roleCode) {
+        // 이메일과 역할 코드가 null인지 체크
+        if (email == null || email.isEmpty()) {
+            throw new RuntimeException("이메일이 null이거나 비어 있습니다.");
+        }
+        if (roleCode == null || roleCode.isEmpty()) {
+            throw new RuntimeException("역할 코드가 null이거나 비어 있습니다.");
         }
 
+        // 사용자 이메일로 User 객체를 조회
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다: " + email));
+
+        // 역할 코드로 Role 객체를 조회
+        Role role = roleRepository.findByRoleCode(roleCode)
+                .orElseThrow(() -> new RuntimeException("역할을 찾을 수 없습니다: " + roleCode));
+
         // USER_ROLES 테이블에 역할 연결
-        userRoleRepository.save(new UserRole(email, role.getRoleCode())); // UserRole 엔티티 생성 후 저장
+        userRoleRepository.save(new UserRole(user, role)); // UserRole 엔티티 생성 후 저장
     }
 
 

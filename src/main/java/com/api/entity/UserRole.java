@@ -1,6 +1,7 @@
 package com.api.entity;
 
 import jakarta.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "user_roles")
@@ -8,36 +9,38 @@ import jakarta.persistence.*;
 public class UserRole {
 
     @Id
-    @Column(name = "user_email")
-    private String userEmail; // 사용자 이메일
+    @ManyToOne
+    @JoinColumn(name = "user_email", referencedColumnName = "email") // User 엔티티의 email 필드와 연결
+    private User user; // 사용자 엔티티와 관계 설정
 
     @Id
-    @Column(name = "role_code")
-    private String roleCode; // 역할 코드
+    @ManyToOne
+    @JoinColumn(name = "role_code", referencedColumnName = "role_code") // Role 엔티티의 roleCode 필드와 연결
+    private Role role; // 역할 엔티티와 관계 설정
 
     // 기본 생성자
     public UserRole() {}
 
     // 사용자와 역할을 연결하기 위한 생성자
-    public UserRole(String userEmail, String roleCode) {
-        this.userEmail = userEmail; // 사용자 이메일
-        this.roleCode = roleCode; // 역할 코드
+    public UserRole(User user, Role role) {
+        this.user = user; // 사용자 설정
+        this.role = role; // 역할 설정
     }
 
     // Getter와 Setter
-    public String getUserEmail() {
-        return userEmail; // 사용자 이메일 반환
+    public User getUser() {
+        return user; // 사용자 반환
     }
 
-    public void setUserEmail(String userEmail) {
-        this.userEmail = userEmail; // 사용자 이메일 설정
+    public void setUser(User user) {
+        this.user = user; // 사용자 설정
     }
 
-    public String getRoleCode() {
-        return roleCode; // 역할 코드 반환
+    public Role getRole() {
+        return role; // 역할 반환
     }
 
-    public void setRoleCode(String roleCode) {
-        this.roleCode = roleCode; // 역할 코드 설정
+    public void setRole(Role role) {
+        this.role = role; // 역할 설정
     }
 }

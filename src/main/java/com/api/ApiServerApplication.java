@@ -51,8 +51,8 @@ public class ApiServerApplication implements CommandLineRunner {
 
 	private void createRoles() {
 		List<Role> roles = Arrays.asList(
-				new Role("R000001", new CommonCode("CR000001", "일반 사용자", "ROLE"), "1"), // ROLE_USER
-				new Role("R000002", new CommonCode("CR000002", "관리자", "ROLE"), "2") // ROLE_ADMIN
+				new Role("R000001", new CommonCode("CR000001", "일반 사용자", "USER"), "1"), // ROLE_USER
+				new Role("R000002", new CommonCode("CR000002", "관리자", "ADMIN"), "2") // ROLE_ADMIN
 		);
 
 		roleRepository.saveAll(roles);
@@ -60,7 +60,7 @@ public class ApiServerApplication implements CommandLineRunner {
 
 	private void createMenus() {
 		List<Menu> menus = Arrays.asList(
-				new Menu("M000001", new CommonCode("CM000001", "코딩 테스트", "MENU"), null, "ROLE_USER", "1"), // 메뉴: 코딩 테스트
+				new Menu("M000001", new CommonCode("CM000001", "코딩 테스트", "MENU"), null, "USER", "1"), // 메뉴: 코딩 테스트
 				new Menu("M000002", new CommonCode("CM000002", "코딩 테스트 확인", "MENU"), new Menu("M000001", new CommonCode("CM000001", "코딩 테스트", "MENU"), null, "ROLE_USER", "1"), "ROLE_USER", "2"), // 메뉴: 코딩 테스트 확인
 				new Menu("M000003", new CommonCode("CM000003", "코딩 테스트 모든 결과", "MENU"), new Menu("M000001", new CommonCode("CM000001", "코딩 테스트", "MENU"), null, "ROLE_USER", "1"), "ROLE_ADMIN", "2"), // 메뉴: 코딩 테스트 모든 결과
 				new Menu("M000004", new CommonCode("CM000004", "코딩 테스트 분석", "MENU"), new Menu("M000001", new CommonCode("CM000001", "코딩 테스트", "MENU"), null, "ROLE_USER", "1"), "ROLE_ADMIN", "2") // 메뉴: 코딩 테스트 분석
