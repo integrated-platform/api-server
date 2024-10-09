@@ -60,14 +60,15 @@ public class ApiServerApplication implements CommandLineRunner {
 
 	private void createMenus() {
 		List<Menu> menus = Arrays.asList(
-				new Menu("M000001", new CommonCode("CM000001", "코딩 테스트", "MENU"), null, "USER", "1"), // 메뉴: 코딩 테스트
-				new Menu("M000002", new CommonCode("CM000002", "코딩 테스트 확인", "MENU"), new Menu("M000001", new CommonCode("CM000001", "코딩 테스트", "MENU"), null, "ROLE_USER", "1"), "ROLE_USER", "2"), // 메뉴: 코딩 테스트 확인
-				new Menu("M000003", new CommonCode("CM000003", "코딩 테스트 모든 결과", "MENU"), new Menu("M000001", new CommonCode("CM000001", "코딩 테스트", "MENU"), null, "ROLE_USER", "1"), "ROLE_ADMIN", "2"), // 메뉴: 코딩 테스트 모든 결과
-				new Menu("M000004", new CommonCode("CM000004", "코딩 테스트 분석", "MENU"), new Menu("M000001", new CommonCode("CM000001", "코딩 테스트", "MENU"), null, "ROLE_USER", "1"), "ROLE_ADMIN", "2") // 메뉴: 코딩 테스트 분석
+				new Menu("M000001", new CommonCode("CM000001", "코딩 테스트", "MENU"), null, "ROLE_USER", "USER", "code_test_icon", "/coding-test"), // 메뉴: 코딩 테스트
+				new Menu("M000002", new CommonCode("CM000002", "코딩 테스트 확인", "MENU"), new Menu("M000001", new CommonCode("CM000001", "코딩 테스트", "MENU"), null, "ROLE_USER", "USER", "code_check_icon", "/coding-test/check"), "ROLE_USER", "USER", "code_check_icon", "/coding-test/check"), // 메뉴: 코딩 테스트 확인
+				new Menu("M000003", new CommonCode("CM000003", "코딩 테스트 모든 결과", "MENU"), new Menu("M000001", new CommonCode("CM000001", "코딩 테스트", "MENU"), null, "ROLE_ADMIN", "USER", "all_results_icon", "/coding-test/results"), "ROLE_ADMIN", "ADMIN", "all_results_icon", "/coding-test/results"), // 메뉴: 코딩 테스트 모든 결과
+				new Menu("M000004", new CommonCode("CM000004", "코딩 테스트 분석", "MENU"), new Menu("M000001", new CommonCode("CM000001", "코딩 테스트", "MENU"), null, "ROLE_ADMIN", "USER", "analysis_icon", "/coding-test/analyze"), "ROLE_ADMIN", "ADMIN", "analysis_icon", "/coding-test/analyze") // 메뉴: 코딩 테스트 분석
 		);
 
 		menuRepository.saveAll(menus);
 	}
+
 
 
 }

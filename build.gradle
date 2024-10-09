@@ -31,6 +31,10 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	implementation 'io.jsonwebtoken:jjwt:0.9.1'
 	implementation 'commons-codec:commons-codec:1.15' // 사용 중인 버전으로 변경
+
+	implementation 'javax.xml.bind:jaxb-api:2.3.1'
+	implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.1'
+
 	// MySQL Connector 의존성 추가
 //	implementation 'mysql:mysql-connector-java:8.0.33'
 }

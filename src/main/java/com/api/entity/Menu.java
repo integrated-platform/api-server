@@ -1,7 +1,6 @@
 package com.api.entity;
 
 import jakarta.persistence.*;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -27,6 +26,12 @@ public class Menu {
     @Column(name = "menu_type") // 메뉴 타입
     private String menuType; // 메뉴 타입 (예: "USER", "ADMIN")
 
+    @Column(name = "icon") // 메뉴 아이콘
+    private String icon; // 메뉴 아이콘 (예: "dashboard", "table_view")
+
+    @Column(name = "route") // 메뉴 경로
+    private String route; // 메뉴 경로 (예: "/dashboard")
+
     // 하위 메뉴들을 위한 Set
     @OneToMany(mappedBy = "parent")
     private Set<Menu> children = new HashSet<>(); // 하위 메뉴들
@@ -35,26 +40,15 @@ public class Menu {
     public Menu() {}
 
     // 생성자
-    public Menu(String menuCode, CommonCode commonCode, Menu parent, String menuRole, String menuType) {
+    public Menu(String menuCode, CommonCode commonCode, Menu parent, String menuRole, String menuType, String icon, String route) {
         this.menuCode = menuCode;
         this.commonCode = commonCode;
         this.parent = parent;
         this.menuRole = menuRole;
         this.menuType = menuType;
+        this.icon = icon;
+        this.route = route;
     }
-
-    // 공통 코드만 받는 생성자 (부모 메뉴는 null)
-    public Menu(CommonCode commonCode) {
-        this.commonCode = commonCode;
-        this.menuCode = commonCode.getCode(); // 메뉴 코드를 공통 코드로 설정
-        this.parent = null; // 상위 메뉴 없음
-    }
-
-    public Menu(CommonCode commonCode, Menu parent) {
-        this.commonCode = commonCode;
-        this.parent = parent;
-    }
-
 
     // Getter, Setter
     public String getMenuCode() {
@@ -95,6 +89,22 @@ public class Menu {
 
     public void setMenuType(String menuType) {
         this.menuType = menuType;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
+
+    public String getRoute() {
+        return route;
+    }
+
+    public void setRoute(String route) {
+        this.route = route;
     }
 
     public Set<Menu> getChildren() {

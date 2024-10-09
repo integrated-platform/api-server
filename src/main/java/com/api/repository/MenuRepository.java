@@ -9,7 +9,9 @@ import java.util.Optional;
 
 @Repository
 public interface MenuRepository extends JpaRepository<Menu, Long> {
-    List<Menu> findByMenuType(String MenuType); // 메뉴 타입에 따라 메뉴 조회
+    List<Menu> findByMenuRoleIn(List<String> roles);
 
     Optional<Menu> findByMenuCode(String menuCode);
+
+
 }

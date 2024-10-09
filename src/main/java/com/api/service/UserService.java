@@ -82,34 +82,6 @@ public class UserService {
         }
         user.getRoles().add(role); // 사용자 엔티티의 권한 집합에 권한 추가
     }
-    // JWT 생성 메서드
-    public String generateJWT(User user) {
-        // JWT 생성
-        Claims claims = Jwts.claims().setSubject(user.getEmail());
-        claims.put("username", user.getUsername());
-
-        Date now = new Date();
-        Date expirationDate = new Date(now.getTime() + EXPIRATION_TIME);
-
-        return Jwts.builder()
-                .setClaims(claims)
-                .setIssuedAt(now)
-                .setExpiration(expirationDate)
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
-                .compact();
-    }
-
-    public String generateToken(String email, String password) {
-        // 사용자 인증 로직
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다: " + email));
-        if (user == null || !verifyPassword(password, user.getPassword())) {
-            return null; // 인증 실패
-        }
-
-        // JWT 생성 로직 추가 (예: Jwts.builder()를 사용하여 토큰 생성)
-        return "generated-jwt-token"; // 실제 JWT로 대체
-    }
 
     public void addUserRole(String email, String roleCode) {
         // 이메일과 역할 코드가 null인지 체크

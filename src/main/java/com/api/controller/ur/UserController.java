@@ -8,6 +8,7 @@ import com.api.entity.User;
 import com.api.response.ApiResponse;
 import com.api.service.RoleService; // RoleService 추가
 import com.api.service.UserService;
+import com.api.utilty.JWTUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,9 @@ public class UserController {
 
     @Autowired
     private RoleService roleService; // RoleService 주입
+
+    @Autowired
+    private JWTUtility jwtUtility;
 
     // 사용자 가입 메서드
     @PostMapping
@@ -80,7 +84,7 @@ public class UserController {
         }
 
         // JWT 생성
-        String token = userService.generateJWT(user); // JWT 생성 서비스 호출
+        String token = jwtUtility.generateJWT(user); // JWT 생성 서비스 호출
 
         // 로그인 성공 시 LoginResponse 생성
         LoginResponse loginResponse = new LoginResponse(token);
