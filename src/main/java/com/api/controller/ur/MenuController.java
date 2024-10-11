@@ -2,6 +2,7 @@ package com.api.controller.ur;
 
 import com.api.dto.LoginRequest;
 import com.api.dto.LoginResponse;
+import com.api.dto.MenuDTO;
 import com.api.dto.UserDTO;
 import com.api.entity.Menu;
 import com.api.entity.User;
@@ -28,12 +29,39 @@ public class MenuController {
     private JWTUtility jwtUtility;
 
     @GetMapping
-    public List<Menu> getAllMenus(@RequestParam(required = false) String token) {
-        if (token == null || !jwtUtility.validateToken(token)) {
-            throw new RuntimeException("Invalid or missing token"); // 토큰이 유효하지 않으면 예외 발생
+    public ResponseEntity<ApiResponse<List<MenuDTO>>> getAllMenus(
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
+
+        // Authorization 헤더에서 Bearer 토큰 추출
+        String token = extractToken(authHeader);
+
+        // 토큰 검증
+        if (!isTokenValid(token)) {
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(new ApiResponse<>(false, "유효하지 않거나 누락된 토큰입니다.", null)); // 401 Unauthorized
         }
-        String role = jwtUtility.extractRole(token); // 토큰에서 역할 추출
-        return menuService.getMenusByRole(role); // 역할에 따른 메뉴 요청
+
+        // 토큰에서 역할 추출
+        String role = jwtUtility.extractRole(token);
+
+        // 역할에 따른 메뉴 요청
+        List<MenuDTO> menus = menuService.getMenusByRole(role);
+
+        return ResponseEntity.ok(new ApiResponse<>(true, "메뉴를 성공적으로 조회하였습니다.", menus)); // 200 OK
+    }
+
+    // 토큰 추출 메소드
+    private String extractToken(String authHeader) {
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            return authHeader.substring(7); // "Bearer " 다음 부분을 추출
+        }
+        return null;
+    }
+
+    // 토큰 유효성 검사 메소드
+    private boolean isTokenValid(String token) {
+        return token != null && jwtUtility.validateToken(token);
     }
 
 

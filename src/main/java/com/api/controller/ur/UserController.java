@@ -5,6 +5,7 @@ import com.api.dto.LoginResponse;
 import com.api.dto.UserDTO;
 import com.api.entity.Role;
 import com.api.entity.User;
+import com.api.request.TokenRequest;
 import com.api.response.ApiResponse;
 import com.api.service.RoleService; // RoleService 추가
 import com.api.service.UserService;
@@ -32,7 +33,7 @@ public class UserController {
     public ResponseEntity<ApiResponse<UserDTO>> createUser(@RequestBody UserDTO userDTO) {
         // 이메일 중복 체크
         if (userService.isEmailAlreadyInUse(userDTO.getEmail())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
                     .body(new ApiResponse<>(false, "이미 존재하는 이메일입니다.", null));
         }
 
@@ -42,7 +43,7 @@ public class UserController {
         // 기본 권한 로드 및 설정
         Role userRole = roleService.findUserRole(); // 사용자 권한 객체 조회
         if (userRole == null) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
                     .body(new ApiResponse<>(false, "기본 사용자 권한을 찾을 수 없습니다.", null));
         }
 
@@ -59,37 +60,45 @@ public class UserController {
     }
 
 
-    // 사용자 검증 메서드
-    @PostMapping("/validate")
-    public ResponseEntity<ApiResponse<Void>> validateUser(@RequestBody LoginRequest loginRequest) {
-        boolean isValid = userService.validateUser(loginRequest.getEmail(), loginRequest.getPassword());
+    // JWT 토큰 검증 엔드포인트
+    @PostMapping("/validate-token")
+    public ResponseEntity<ApiResponse<Void>> validateToken(@RequestBody TokenRequest request) {
+        // JWT 토큰 검증 로직
+        boolean isValid = jwtUtility.validateToken(request.getToken());
 
         if (!isValid) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new ApiResponse<>(false, "사용자 검증 실패: 이메일 또는 비밀번호가 잘못되었습니다.", null));
+                    .body(new ApiResponse<>(false, "잘못된 토큰입니다.", null));
         }
 
-        return ResponseEntity.ok(new ApiResponse<>(true, "사용자 검증 성공!", null));
+        return ResponseEntity.ok(new ApiResponse<>(true, "토큰 검증 성공!", null));
     }
 
-    // 로그인 메서드 (JWT 생성 포함)
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<LoginResponse>> login(@RequestBody LoginRequest loginRequest) {
-        // 사용자 검증 로직
-        User user = userService.findByEmail(loginRequest.getEmail());
+        try {
+            // 사용자 검증 로직
+            User user = userService.findByEmail(loginRequest.getEmail());
 
-        if (user == null || !userService.verifyPassword(loginRequest.getPassword(), user.getPassword())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new ApiResponse<>(false, "로그인 실패: 이메일 또는 비밀번호가 잘못되었습니다.", null));
+            // 비밀번호 검증 실패 시 401 Unauthorized 반환
+            if (!userService.verifyPassword(loginRequest.getPassword(), user.getPassword())) {
+                return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+                        .body(new ApiResponse<>(false, "로그인 실패: 이메일 또는 비밀번호가 잘못되었습니다.", null));
+            }
+
+            // JWT 생성
+            String token = jwtUtility.generateJWT(user); // JWT 생성 서비스 호출
+
+            // 로그인 성공 시 LoginResponse 생성
+            LoginResponse loginResponse = new LoginResponse(token);
+
+            return ResponseEntity.ok(new ApiResponse<>(true, "로그인 성공", loginResponse));
+
+        }  catch (Exception e) {
+            // 서버 내부 오류 발생 시 500 Internal Server Error 반환
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse<>(false, "서버 오류가 발생했습니다.", null));
         }
-
-        // JWT 생성
-        String token = jwtUtility.generateJWT(user); // JWT 생성 서비스 호출
-
-        // 로그인 성공 시 LoginResponse 생성
-        LoginResponse loginResponse = new LoginResponse(token);
-
-        return ResponseEntity.ok(new ApiResponse<>(true, "로그인 성공", loginResponse));
     }
 
     // 사용자 정보 조회 메서드
@@ -97,7 +106,7 @@ public class UserController {
     public ResponseEntity<ApiResponse<UserDTO>> getUserByEmail(@PathVariable String email) {
         User user = userService.findByEmail(email);
         if (user == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
                     .body(new ApiResponse<>(false, "사용자를 찾을 수 없습니다.", null));
         }
 

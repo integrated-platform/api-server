@@ -1,7 +1,10 @@
 package com.api.entity;
 
 import jakarta.persistence.*;
+
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -34,7 +37,7 @@ public class Menu {
 
     // 하위 메뉴들을 위한 Set
     @OneToMany(mappedBy = "parent")
-    private Set<Menu> children = new HashSet<>(); // 하위 메뉴들
+    private List<Menu> children = new ArrayList<>(); // 하위 메뉴들
 
     // 기본 생성자
     public Menu() {}
@@ -107,11 +110,11 @@ public class Menu {
         this.route = route;
     }
 
-    public Set<Menu> getChildren() {
+    public List<Menu> getChildren() {
         return children;
     }
 
-    public void setChildren(Set<Menu> children) {
+    public void setChildren(List<Menu> children) {
         this.children = children;
     }
 }

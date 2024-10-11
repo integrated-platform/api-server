@@ -19,6 +19,9 @@ public class Role {
     @Column(name = "access_level", nullable = false) // 접근 수준 추가
     private String accessLevel; // 역할의 유형
 
+    @Column(name = "role", nullable = false) // 접근 수준 추가
+    private String role; // 역할의 유형
+
     @ManyToMany
     @JoinTable(
             name = "user_roles",
@@ -31,10 +34,11 @@ public class Role {
     public Role() {}
 
     // 생성자
-    public Role(String roleCode, CommonCode commonCode, String accessLevel) {
+    public Role(String roleCode, CommonCode commonCode, String accessLevel , String role) {
         this.roleCode = roleCode;
         this.commonCode = commonCode; // 공통 코드를 설정
         this.accessLevel = accessLevel; // 접근 수준 설정
+        this.role = role; // 접근 수준 설정
     }
 
     // Getter, Setter
@@ -68,5 +72,13 @@ public class Role {
 
     public void setUsers(Set<User> users) {
         this.users = users;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }

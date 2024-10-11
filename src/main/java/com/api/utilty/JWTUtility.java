@@ -20,7 +20,14 @@ public class JWTUtility {
     public String generateJWT(User user) {
         // JWT 생성
         Claims claims = Jwts.claims().setSubject(user.getEmail());
+        String role = user.getRoles().stream()
+                .findFirst() // 여러 역할 중 첫 번째 역할 선택
+                .map(roles -> roles.getRole()) // accessLevel 가져오기
+                .orElse("0"); // 기본 값 설정 (없을 경우)
+
         claims.put("username", user.getUsername());
+        claims.put("auth",role);
+        claims.put("email", user.getEmail());
 
         Date now = new Date();
         Date expirationDate = new Date(now.getTime() + EXPIRATION_TIME);
@@ -52,6 +59,6 @@ public class JWTUtility {
     // JWT에서 역할 추출 메소드
     public String extractRole(String token) {
         Claims claims = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
-        return claims.get("role", String.class);
+        return claims.get("auth", String.class);
     }
 }
